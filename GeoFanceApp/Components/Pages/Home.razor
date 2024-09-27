@@ -1,0 +1,44 @@
+﻿@page "/"
+@inject GeofenceService.GeofenceService GeofenceService 
+
+<h3>Geofence Status</h3>
+
+@if (statusMessage == null)
+{
+    <p>Checking geofence...</p>
+}
+else
+{
+    <p>@statusMessage</p>
+}
+
+@code {
+    private string statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var location = await GeofenceService.GetCurrentLocationAsync();
+        if (location != null)
+        {
+            // Example geofence center point and radius, We can take from Mobile emulator, 
+            // Find my location website
+            double fenceLat = 37.4219;  // Example Latitude
+            double fenceLon = -122.0840;  // Example Longitude
+            double radiusInMeters = 800; // Radius in meters
+
+            if (GeofenceService.IsWithinGeofence(location, fenceLat, fenceLon, radiusInMeters))
+            {
+                statusMessage = "You are within the geofence.";
+            }
+            else
+            {
+                statusMessage = "You are outside the geofence.";
+            }
+        }
+        else
+        {
+            statusMessage = "Unable to retrieve location.";
+        }
+    }
+}
+
